@@ -1,11 +1,14 @@
+if [ $# -ne 2 ] ; then
+	echo "Error !!! Requires 2 arguments. $# argument(s) provided. Exiting ... (ERR_CODE: 1000)"
+	exit 1000
+fi
+
 declare vcflib_path
 
 declare script_path
 declare input_folder
-declare input_id
 declare input_count
 declare output_folder
-declare output_path
 declare -a files
 declare -a input_ids
 
