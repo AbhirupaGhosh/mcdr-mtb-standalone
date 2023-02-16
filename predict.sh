@@ -37,7 +37,8 @@ if [ "${output_folder[@]: -1: 1}" != "/" ] ; then
 	output_folder="$output_folder/"
 fi
 
-files=(`ls $input_folder*.vcf`)
+# files=(`ls $input_folder*.vcf`)
+files=(`find $input_folder -maxdepth 1 -type f -name "*.vcf"`)
 for ((i=0,j=0; i<${#files[@]}; ++i)) ; do
 	declare temp
 	temp=${files[$i]##*/}

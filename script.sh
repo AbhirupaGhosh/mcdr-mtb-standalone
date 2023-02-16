@@ -49,7 +49,8 @@ if [ "${output_folder[@]: -1: 1}" != "/" ] ; then
 	output_folder=$output_folder"/"
 fi
 
-files=(`ls $input_folder*.fastq.gz`)
+# files=(`ls $input_folder*.fastq.gz`)
+files=(`find $input_folder -maxdepth 1 -type f -name "*.fastq.gz"`)
 for ((i=0,j=0; i<${#files[@]}; ++i)) ; do
 	declare temp
 	temp=${files[$i]##*/}
