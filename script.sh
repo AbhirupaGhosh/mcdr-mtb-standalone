@@ -13,6 +13,10 @@ declare vcflib_path
 declare bgzip_path
 declare bcftools_path
 
+declare trim_galore_cores
+declare bwa_mem_cores
+declare samtools_cores
+
 declare script_path
 declare input_folder
 declare input_id
@@ -59,6 +63,13 @@ for ((i=0,j=0; i<${#files[@]}; ++i)) ; do
 	unset temp
 done
 
+input_count=${#input_ids[@]}
+
+if [[ $input_count -eq 0 ]] ; then
+	echo "Error !!! No input .fastq files. Exiting ... (ERR_CODE: 1001)"
+	exit 1001
+fi
+
 echo "Running with following arguments:"
 echo "script_path = "$script_path
 echo "input_folder = "$input_folder
@@ -72,10 +83,12 @@ echo "trim_galore_path = "$trim_galore_path
 echo "vcflib_path = "$vcflib_path
 echo "bgzip_path = "$bgzip_path
 echo "bcftools_path = "$bcftools_path
+echo "trim_galore_cores = "$trim_galore_cores
+echo "bwa_mem_cores = "$bwa_mem_cores
+echo "samtools_cores = "$samtools_cores
 
 echo ""
 
-input_count=${#input_ids[@]}
 ((k=1))
 for input_id in ${input_ids[@]} ; do
 	output_path=$output_folder$input_id"/"
@@ -91,7 +104,7 @@ for input_id in ${input_ids[@]} ; do
 
 	#quality preprocess
 	echo "Doing trim-galore ..."
-	$trim_galore_path --paired  $input_folder$input_id\_1.fastq.gz $input_folder$input_id\_2.fastq.gz --output_dir $output_path >/dev/null 2>&1
+	$trim_galore_path --cores "$trim_galore_cores" --paired  $input_folder$input_id\_1.fastq.gz $input_folder$input_id\_2.fastq.gz --output_dir $output_path >/dev/null 2>&1
 	echo "Done trim-galore. Exit status $?"
 	echo ""
 
@@ -103,7 +116,7 @@ for input_id in ${input_ids[@]} ; do
 
 	#alignment
 	echo "Doing bwa mem ..."
-	$bwa_path mem -t 16 $output_path"reference/GCF_000195955.2_ASM19595v2_genomic.fna" -R "@RG\tID:$input_id\_\tSM:$input_id\_\tPL:ILLUMINA\tLB:$input_id\_" $output_path$input_id\_1_val_1.fq.gz $output_path$input_id\_2_val_2.fq.gz | samtools sort -o $output_path$input_id.bam
+	$bwa_path mem -t "$bwa_mem_cores" $output_path"reference/GCF_000195955.2_ASM19595v2_genomic.fna" -R "@RG\tID:$input_id\_\tSM:$input_id\_\tPL:ILLUMINA\tLB:$input_id\_" $output_path$input_id\_1_val_1.fq.gz $output_path$input_id\_2_val_2.fq.gz | samtools sort "-@"$samtools_cores -o $output_path$input_id.bam
 	echo "Done bwa mem. Exit status $?"
 	echo ""
 
@@ -115,25 +128,25 @@ for input_id in ${input_ids[@]} ; do
 
 	#sorting the bam on names of the reads
 	echo "Doing samtools sort ..."
-	$samtools_path sort -n -o $output_path$input_id\_namesort.bam $output_path$input_id.bam >/dev/null 2>&1
+	$samtools_path sort -n "-@"$samtools_cores -o $output_path$input_id\_namesort.bam $output_path$input_id.bam >/dev/null 2>&1
 	echo "Done samtools sort. Exit status $?"
 	echo ""
 
 	#fix the paired mates
 	echo "Doing samtools fixmate ..."
-	$samtools_path fixmate -m $output_path$input_id\_namesort.bam $output_path$input_id\_fix.bam >/dev/null 2>&1
+	$samtools_path fixmate -m "-@"$samtools_cores $output_path$input_id\_namesort.bam $output_path$input_id\_fix.bam >/dev/null 2>&1
 	echo "Done samtools fixmate. Exit status $?"
 	echo ""
 
 	#sorting the bam on positions
 	echo "Doing samtools sort ..."
-	$samtools_path sort -o $output_path$input_id\_positionsort.bam $output_path$input_id\_fix.bam >/dev/null 2>&1
+	$samtools_path sort "-@"$samtools_cores -o $output_path$input_id\_positionsort.bam $output_path$input_id\_fix.bam >/dev/null 2>&1
 	echo "Done samtools sort. Exit status $?"
 	echo ""
 
 	#marking the duplicates
 	echo "Doing samtools markdup ..."
-	$samtools_path markdup $output_path$input_id\_positionsort.bam $output_path$input_id\_markdup.bam >/dev/null 2>&1
+	$samtools_path markdup "-@"$samtools_cores $output_path$input_id\_positionsort.bam $output_path$input_id\_markdup.bam >/dev/null 2>&1
 	echo "Done markdup. Exit status $?"
 	echo ""
 
