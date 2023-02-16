@@ -52,6 +52,15 @@ for ((i=0,j=0; i<${#files[@]}; ++i)) ; do
 	unset temp
 done
 
+input_count=${#input_ids[@]}
+if [[ $input_count -eq 0 ]] ; then
+	echo "Error !!! No input VCF files. Exiting ... (ERR_CODE: 1001)"
+	exit 1001
+elif [[ $input_count -gt 1 ]] ; then
+	echo "Error !!! More than one input VCF files. Exiting ... (ERR_CODE: 1001)"
+	exit 1001
+fi
+
 echo "Running with following arguments:"
 echo "script_path = $script_path"
 echo "input_folder = $input_folder"
@@ -61,20 +70,11 @@ echo "vcflib_path = $vcflib_path"
 
 echo ""
 
-input_count=${#input_ids[@]}
-if [[ $input_count -eq 0 ]] ; then
-	echo "Error !!! No input VCF files. Exiting ... (ERR_CODE: 1001)"
-	exit 1001
-elif [[ $input_count -gt 1 ]] ; then
-	echo "Error !!! More than one input VCF files. Exiting ... (ERR_CODE: 1001)"
-	exit 1001
-else
-	echo "Doing vcf2tsv ..."
-	$vcflib_path vcfbreakmulti $input_folder${input_ids[0]}".vcf" | $vcflib_path vcf2tsv -g > $output_folder${input_ids[0]}".tsv"
-	echo "Done vcf2tsv. Exit status $?"
-	echo ""
+echo "Doing vcf2tsv ..."
+$vcflib_path vcfbreakmulti $input_folder${input_ids[0]}".vcf" | $vcflib_path vcf2tsv -g > $output_folder${input_ids[0]}".tsv"
+echo "Done vcf2tsv. Exit status $?"
+echo ""
 
-	echo "Doing predictions ..."
-	Rscript $script_path"predict_batch.R" $script_path"data/" $output_folder${input_ids[0]}".tsv"
-	echo "Done predictions"
-fi
+echo "Doing predictions ..."
+Rscript $script_path"predict_batch.R" $script_path"data/" $output_folder${input_ids[0]}".tsv"
+echo "Done predictions"
