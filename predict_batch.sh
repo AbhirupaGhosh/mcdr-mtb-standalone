@@ -52,6 +52,16 @@ for ((i=0,j=0; i<${#files[@]}; ++i)) ; do
 	unset temp
 done
 
+input_count=${#input_ids[@]}
+if [[ $input_count -eq 0 ]] ; then
+	echo "Error !!! No input VCF file. Exiting ... (ERR_CODE: 1001)"
+	exit 1001
+elif [[ $input_count -eq 1 ]] ; then
+	echo "Error !!! Single VCF file found in input folder. Exiting ... (ERR_CODE: 1001)"
+	echo "Use 'predict_single.sh' for prediction from single files."
+	exit 1001
+fi
+
 echo "Running with following arguments:"
 echo "script_path = $script_path"
 echo "input_folder = $input_folder"
@@ -61,41 +71,29 @@ echo "vcflib_path = $vcflib_path"
 
 echo ""
 
-input_count=${#input_ids[@]}
-if [[ $input_count -gt 1 ]] ; then
-	echo "Doing zip and index ..."
-	for ((i=0; i<${#input_ids[@]}; ++i)) ; do
-		$bgzip_path -c "$input_folder${input_ids[$i]}.vcf" > $output_folder${input_ids[$i]}.vcf.gz && $bcftools_path index $output_folder${input_ids[$i]}.vcf.gz
-	done
-	echo "Done zip and index. Exit status $?"
-	echo ""
+echo "Doing zip and index ..."
+for ((i=0; i<${#input_ids[@]}; ++i)) ; do
+	$bgzip_path -c "$input_folder${input_ids[$i]}.vcf" > $output_folder${input_ids[$i]}.vcf.gz && $bcftools_path index $output_folder${input_ids[$i]}.vcf.gz
+done
+echo "Done zip and index. Exit status $?"
+echo ""
 
-	echo "Doing VCF merge ..."
-	declare -a zipped_vcf_files
-	for ((i=0; i<${#input_ids[@]}; ++i)) ; do
-		zipped_vcf_files[$i]=$output_folder${input_ids[$i]}".vcf.gz"
-	done
-	# echo ${zipped_vcf_files[@]}
-	$bcftools_path merge -m all ${zipped_vcf_files[@]} > $output_folder"merged.vcf"
-	echo "Done VCF merge. Exit status $?"
-	echo ""
+echo "Doing VCF merge ..."
+declare -a zipped_vcf_files
+for ((i=0; i<${#input_ids[@]}; ++i)) ; do
+	zipped_vcf_files[$i]=$output_folder${input_ids[$i]}".vcf.gz"
+done
+# echo ${zipped_vcf_files[@]}
+$bcftools_path merge -m all ${zipped_vcf_files[@]} > $output_folder"merged.vcf"
+echo "Done VCF merge. Exit status $?"
+echo ""
 
-	echo "Doing vcf2tsv ..."
-	$vcflib_path vcfbreakmulti $output_folder"merged.vcf" | $vcflib_path vcf2tsv -g > $output_folder"merged.tsv"
-	echo "Done vcf2tsv. Exit status $?"
-	echo ""
+echo "Doing vcf2tsv ..."
+$vcflib_path vcfbreakmulti $output_folder"merged.vcf" | $vcflib_path vcf2tsv -g > $output_folder"merged.tsv"
+echo "Done vcf2tsv. Exit status $?"
+echo ""
 
-	echo "Doing predictions ..."
-	Rscript $script_path"predict_batch.R" $script_path"data/" $output_folder"merged.tsv"
-	echo "Done predictions"
-else
-	echo "Doing vcf2tsv ..."
-	$vcflib_path vcfbreakmulti $input_folder${input_ids[0]}".vcf" | $vcflib_path vcf2tsv -g > $output_folder${input_ids[0]}".tsv"
-	echo "Done vcf2tsv. Exit status $?"
-	echo ""
-
-	echo "Doing predictions ..."
-	Rscript $script_path"predict.R" $script_path"data/" $output_folder${input_ids[0]}".tsv"
-	echo "Done predictions"
-fi
+echo "Doing predictions ..."
+Rscript $script_path"predict_batch.R" $script_path"data/" $output_folder"merged.tsv"
+echo "Done predictions"
 
