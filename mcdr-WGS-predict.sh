@@ -74,7 +74,7 @@ fi
 echo "Running with following arguments:"
 echo "script_path = "$script_path
 echo "input_folder = "$input_folder
-echo "Sammple IDs = {"${input_ids[@]}"}"
+echo "Sample IDs = {"${input_ids[@]}"}"
 echo "output_folder = "$output_folder
 echo "reference_genome = "$script_path"data/GCF_000195955.2_ASM19595v2_genomic.fna"
 echo "freebayes_path = "$freebayes_path

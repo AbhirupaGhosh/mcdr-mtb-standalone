@@ -65,7 +65,7 @@ fi
 echo "Running with following arguments:"
 echo "script_path = $script_path"
 echo "input_folder = $input_folder"
-echo "Sammple IDs = {"${input_ids[@]}"}"
+echo "Sample IDs = {"${input_ids[@]}"}"
 echo "output_folder = $output_folder"
 echo "vcflib_path = $vcflib_path"
 
