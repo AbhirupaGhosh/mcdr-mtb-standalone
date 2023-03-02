@@ -17,6 +17,10 @@ A_col <- unlist(read.table(paste0(script_path, "A_col.txt")))
 svm_R <- readRDS(paste0(script_path, "svm_R_model.rds"))
 
 In <- read.table(input_file, comment.char = "", sep = "\t", header = TRUE)
+
+if(length(unique(In$SAMPLE))>1)
+  stop("More than 1 samples are found in the VCF file.")
+
 Ind <- In[,c("POS", "REF", "ALT", "QUAL", "SAMPLE", "AO", "DP")]
 Ind$AO[Ind$AO=="."] <- 0
 Ind$DP[Ind$DP=="."] <- 0
