@@ -6,6 +6,7 @@ if (length(args) != 3 )
 script_path <- args[1]
 input_file <- args[2]
 output_path <- args[3]
+
 # print(script_path)
 # print(input_file)
 # print(output_path)
@@ -13,7 +14,7 @@ output_path <- args[3]
 library(reshape2, quietly=TRUE)
 library(caret, quietly=TRUE)
 
-Input <- read.table(input_file, sep = "\t", comment.char = "", header = TRUE)
+Input <- read.table(input_file, sep = "\t", comment.char = "", header = TRUE, stringsAsFactors=FALSE)
 Ind_batch <- Input[,c("POS", "REF", "ALT", "QUAL", "SAMPLE", "AO.1", "DP.1")]
 Ind_batch$AO.1[Ind_batch$AO.1=="."] <- 0
 Ind_batch$DP.1[Ind_batch$DP.1=="."] <- 0
@@ -60,8 +61,8 @@ for(i in 1:nrow(pred_prob_bat)){
   }else{
     output[i,"CLASS"] <- "XDR"
   }
-#  output[i,3] <- max(pred_prob_bat[i,])- max(pred_prob_bat[i,-n])
- output[i,"RI"] <- round((max(pred_prob_bat[i,])- max(pred_prob_bat[i,-n]))*10, digits = 0)
+#   output[i,3] <- max(pred_prob_bat[i,])- max(pred_prob_bat[i,-n])
+  output[i,"RI"] <- round((max(pred_prob_bat[i,])- max(pred_prob_bat[i,-n]))*10, digits = 0)
 }
 # colnames(output) <- c("SAMPLE", "PREDICTION", "DIFF", "RI")
 
