@@ -94,6 +94,6 @@ echo "Done vcf2tsv. Exit status $?"
 echo ""
 
 echo "Doing predictions ..."
-Rscript $script_path"predict_batch.R" $script_path"data/" $output_folder"merged.tsv"
+Rscript $script_path"predict_batch.R" $script_path"data/" $output_folder"merged.tsv" $output_folder
 echo "Done predictions"
 

@@ -188,7 +188,7 @@ if [[ $input_count -gt 1 ]] ; then
 	echo ""
 
 	echo "Doing predictions ..."
-	Rscript $script_path"predict_batch.R" $script_path"data/" $output_folder"merged.tsv"
+	Rscript $script_path"predict_batch.R" $script_path"data/" $output_folder"merged.tsv" $output_folder
 	echo "Done predictions"
 else
 	echo "Doing vcf2tsv ..."
@@ -197,6 +197,6 @@ else
 	echo ""
 
 	echo "Doing predictions ..."
-	Rscript $script_path"predict.R" $script_path"data/" $output_folder${input_ids[0]}".tsv"
+	Rscript $script_path"predict.R" $script_path"data/" $output_folder${input_ids[0]}".tsv" $output_folder
 	echo "Done predictions"
 fi

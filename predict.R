@@ -1,13 +1,14 @@
 args=commandArgs(trailingOnly=TRUE)
 # print(length(args))
-if (length(args) != 2 )
+if (length(args) != 3 )
   stop("Invalid number of arguments to Rscript.")
 
 script_path <- args[1]
 input_file <- args[2]
-
+output_path <- args[3]
 # print(script_path)
 # print(input_file)
+# print(output_path)
 
 library(reshape2, quietly=TRUE)
 library(caret, quietly=TRUE)
@@ -35,17 +36,39 @@ for(i in colnames(data_2)){
     data_2[1,i] <- Ind_l[1,i]
   }else{
     data_2[1,i] <- 0.00
-  }}
+  }
+}
 
 
-pred_prob_svm_R_ind <- predict(svm_R, data_2, type="prob")
-pred_svm_R_ind <- predict(svm_R, data_2)
-prob <- unname(unlist(pred_prob_svm_R_ind))
+pred_prob <- predict(svm_R, data_2, type="prob")
+# pred_svm_R_ind <- predict(svm_R, data_2)
+prob <- unname(unlist(pred_prob))
 diff <- max(prob)-max(prob[prob!=max(prob)]) #highest - second highest
 RI <- round(diff*10, digits = 0)
 
+out <- pred_prob
+colnames(out)[1:3] <- c("MDR", "Susceptible", "XDR")
+out[,c("MDR", "Susceptible", "XDR")] <- round(out[,c("MDR", "Susceptible", "XDR")], digits = 4)
+if(predict(svm_R, data_2)== "X") {
+  out$Class <- "XDR"
+} else if(predict(svm_R, data_2)== "M") {
+  out$Class <- "MDR"
+} else {
+  out$Class <- "Susceptible"
+}
+
+out$Sample <- Ind_l$SAMPLE
+out$RI <- round(diff*10, digits = 0)
+out <- out[c(5,1:4,6)]
 cat("\n")
-cat("\tSAMPLE =", Ind_l$SAMPLE, "\n")
-cat("\tPredicted class =", suppressWarnings(names(sort(pred_prob_svm_R_ind, decreasing=TRUE)))[1], "\n")
-cat("\tProbability =", max(prob), "\n")
-cat("\tRelability Index (RI) =", RI, "\n\n")
+print(out)
+cat("\n")
+
+write.table(out, file = paste0(output_path, "prediction.tsv"), row.names = FALSE)
+
+# cat("\n")
+# cat("\tSAMPLE =", Ind_l$SAMPLE, "\n")
+# cat("\tPredicted class =", suppressWarnings(names(sort(pred_prob_svm_R_ind, decreasing=TRUE)))[1], "\n")
+# cat("\tProbability =", max(prob), "\n")
+# cat("\tRelability Index (RI) =", RI, "\n\n")
+

@@ -1,13 +1,14 @@
 args=commandArgs(trailingOnly=TRUE)
 # print(length(args))
-if (length(args) != 2 )
+if (length(args) != 3 )
   stop("Invalid number of arguments to Rscript.")
 
 script_path <- args[1]
 input_file <- args[2]
-
+output_path <- args[3]
 # print(script_path)
 # print(input_file)
+# print(output_path)
 
 library(reshape2, quietly=TRUE)
 library(caret, quietly=TRUE)
@@ -36,22 +37,36 @@ for(j in 1:nrow(data_2_bat)){
       data_2_bat[j,i] <- Ind_batch_l[j,i]
     }else{
       data_2_bat[j,i] <- 0.00
-    }}}
-
-pred_prob_svm_R_ind_bat <- predict(svm_R, data_2_bat, type="prob")
-pred_svm_R_ind_bat <- predict(svm_R, data_2_bat)
-
-pred_svm_R_ind_bat <- unlist(pred_prob_svm_R_ind_bat)
-output <- data.frame()
-for(i in 1:nrow(pred_prob_svm_R_ind_bat)){
- n <- which.max(pred_prob_svm_R_ind_bat[i,])
- output[i,1] <- Ind_batch_l$SAMPLE[i]
- output[i,2] <- colnames(pred_prob_svm_R_ind_bat)[n]
- output[i,3] <- max(pred_prob_svm_R_ind_bat[i,])- max(pred_prob_svm_R_ind_bat[i,-n])
- output[i,4] <- round(output[i,3]*10, digits = 0)
+    }
+  }
 }
-colnames(output) <- c("SAMPLE", "PREDICTION", "DIFF", "RI")
+
+pred_prob_bat <- predict(svm_R, data_2_bat, type="prob")
+pred_bat <- predict(svm_R, data_2_bat)
+
+# pred_bat <- unlist(pred_prob_svm_R_ind_bat)
+output <- data.frame(matrix(ncol = 6, nrow = nrow(pred_prob_bat)))
+colnames(output) <- c("SAMPLE", "MDR", "Susceptible", "XDR", "CLASS", "RI")
+for(i in 1:nrow(pred_prob_bat)){
+  n <- which.max(pred_prob_bat[i,])
+  output[i,"SAMPLE"] <- Ind_batch_l$SAMPLE[i]
+  output[i,2:4] <- pred_prob_bat[i,1:3]
+  output[i,2:4] <- round(output[i,2:4], digits = 4)
+#   output[i,"CLASS"] <- colnames(pred_prob_bat[i,])[n]
+  if(colnames(pred_prob_bat[i,])[n] == "M"){
+    output[i,"CLASS"] <- "MDR"
+  }else if(colnames(pred_prob_bat[i,])[n] == "S"){
+    output[i,"CLASS"] <- "Susceptible"
+  }else{
+    output[i,"CLASS"] <- "XDR"
+  }
+#  output[i,3] <- max(pred_prob_bat[i,])- max(pred_prob_bat[i,-n])
+ output[i,"RI"] <- round((max(pred_prob_bat[i,])- max(pred_prob_bat[i,-n]))*10, digits = 0)
+}
+# colnames(output) <- c("SAMPLE", "PREDICTION", "DIFF", "RI")
 
 cat("\n")
 print(output)
 cat("\n")
+
+write.table(output, file = paste0(output_path, "prediction.tsv"), row.names = FALSE)
