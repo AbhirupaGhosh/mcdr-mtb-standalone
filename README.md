@@ -1,6 +1,6 @@
-# mcdr-tb-standalone
+# mcdr-mtb-standalone
 ## Introduction
-**mcdr-tb-standalone** is a pipeline for prediction of drug resistance class **(MDR, XDR or Susceptible)** of *Mycobacterium tuberculosis* isolates from whole genome sequencing **(WGS)** data. The users can start with paired-end FASTQ files or variant calling output VCF files.
+**mcdr-mtb-standalone** is a pipeline for prediction of drug resistance class **(MDR, XDR or Susceptible)** of *Mycobacterium tuberculosis* isolates from whole genome sequencing **(WGS)** data. The users can start with paired-end FASTQ files or variant calling output VCF files.
 
 ## Workflows
 
@@ -39,11 +39,11 @@ The installation steps for the different packages/tools are given in the followi
 
 R should be installed in the user system/PC. R installation steps are given in https://cran.r-project.org/.
 
-### Step 2: Install mcdr-tb-standalone
+### Step 2: Install mcdr-mtb-standalone
   #### I. Download the software from GitHub repository
    Create a clone of the repository:
 
-      git clone https://github.com/AbhirupaGhosh/mcdr-tb-standalone
+      git clone https://github.com/AbhirupaGhosh/mcdr-mtb-standalone
 
    **Note:** Creating a clone of the repository requires `git` to be installed.
 
@@ -54,16 +54,16 @@ R should be installed in the user system/PC. R installation steps are given in h
 
    Download using `wget`:
 
-      wget https://github.com/AbhirupaGhosh/mcdr-tb-standalone/archive/refs/heads/main.zip
+      wget https://github.com/AbhirupaGhosh/mcdr-mtb-standalone/archive/refs/heads/main.zip
       unzip main.zip
   **Note:** wget can be installed using
 
       sudo apt-get install wget
   #### II. Make the shell scripts executable
 
-    chmod +x INSTALLATION_DIR/mcdr-tb-standalone config.sh mcdr-WGS-predict.sh mcdr-VCF-predict.sh mcdr-multi-VCF-predict.sh mcdr-merge-VCF-predict.sh
+    chmod +x INSTALLATION_DIR/mcdr-mtb-standalone config.sh mcdr-WGS-predict.sh mcdr-VCF-predict.sh mcdr-multi-VCF-predict.sh mcdr-merge-VCF-predict.sh
 
-  `INSTALLATION_DIR` = Directory where mcdr-tb-standalone is installed
+  `INSTALLATION_DIR` = Directory where mcdr-mtb-standalone is installed
   #### III. update the paths in config.sh (optional)
 
   The `config.sh` looks like
@@ -83,15 +83,15 @@ Note: It shows the default paths of the executables files for `freebayes`, `samt
 
 ## Usage
 
-Initially change the directory to the directory where mcdr-tb-standalone is installed.
+Initially change the directory to the directory where mcdr-mtb-standalone is installed.
 
-    cd INSTALLATION_DIR/mcdr-tb-standalone
+    cd INSTALLATION_DIR/mcdr-mtb-standalone
 
 Different operations can be performed by calling the appropriate scripts with two command-line arguments: `INPUT_DIR` and `OUTPUT_DIR`.
 
 `INPUT_DIR` = the path (absolute or relative) of the folder containing the input files.
 
-`OUTPUT_DIR` = the path (absolute or relative) of the folder in which mcdr-tb-standalone will store the outputs.
+`OUTPUT_DIR` = the path (absolute or relative) of the folder in which mcdr-mtb-standalone will store the outputs.
 
 The executable script, and contents of `INPUT_DIR` and `OUTPUT_DIR` depends on the choice of operations. The different operations are explained below.
 
@@ -175,9 +175,9 @@ The prediction output will be displayed on the terminal.
 
    	   mkdir /home/username/Output_Dir1
 
-  Step 5. Go to the mcdr-tb-standalone installation directory
+  Step 5. Go to the mcdr-mtb-standalone installation directory
 
-   	   cd /home/username/Documents/mcdr-tb-standalone/
+   	   cd /home/username/Documents/mcdr-mtb-standalone/
 
   Step 6. Run mcdr-WGS-predict.sh
 
@@ -222,9 +222,9 @@ Download the whole genome sequencing FASTQ files of MTB ISOLATE runs, ERR137249 
 
     mkdir /home/username/Output_Dir2
 
-  Step 5. Go to the mcdr-tb-standalone installation directory
+  Step 5. Go to the mcdr-mtb-standalone installation directory
 
-    cd /home/username/Documents/mcdr-tb-standalone/
+    cd /home/username/Documents/mcdr-mtb-standalone/
 
   Step 6. Run mcdr-WGS-predict.sh
 
@@ -266,9 +266,9 @@ ISOLATE PREDICTION   	DIFF RI
 
     mkdir /home/username/Output_Dir3
 
-  Step 4. Go to the mcdr-tb-standalone installation directory
+  Step 4. Go to the mcdr-mtb-standalone installation directory
 
-    cd /home/username/Documents/mcdr-tb-standalone/
+    cd /home/username/Documents/mcdr-mtb-standalone/
 
   Step 5. Run mcdr-VCF-predict.sh
 
@@ -295,9 +295,9 @@ ISOLATE PREDICTION   	DIFF RI
 
     mkdir /home/username/Output_Dir4
 
-  Step 4. Go to the mcdr-tb-standalone installation directory
+  Step 4. Go to the mcdr-mtb-standalone installation directory
 
-    cd /home/username/Documents/mcdr-tb-standalone/
+    cd /home/username/Documents/mcdr-mtb-standalone/
 
   Step 5. Run mcdr-multi-VCF-predict.sh
 
@@ -330,9 +330,9 @@ ISOLATE PREDICTION   	DIFF RI
 
     mkdir /home/username/Output_Dir5
 
-  Step 4. Go to the mcdr-tb-standalone installation directory
+  Step 4. Go to the mcdr-mtb-standalone installation directory
 
-    cd /home/username/Documents/mcdr-tb-standalone/
+    cd /home/username/Documents/mcdr-mtb-standalone/
 
   Step 5. Run mcdr-merge-predict.sh
 
