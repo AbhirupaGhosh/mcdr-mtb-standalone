@@ -11,6 +11,14 @@ output_path <- args[3]
 # print(input_file)
 # print(output_path)
 
+convertRI <- function(diff){
+  if(diff < 0.1)
+    return(1)
+
+  return(ceiling(round(diff*10, digits = 0)/2))
+}
+
+
 library(reshape2, quietly=TRUE)
 library(caret, quietly=TRUE)
 
@@ -62,7 +70,8 @@ for(i in 1:nrow(pred_prob_bat)){
     output[i,"CLASS"] <- "XDR"
   }
 #   output[i,3] <- max(pred_prob_bat[i,])- max(pred_prob_bat[i,-n])
-  output[i,"RI"] <- round((max(pred_prob_bat[i,])- max(pred_prob_bat[i,-n]))*10, digits = 0)
+#   output[i,"RI"] <- round((max(pred_prob_bat[i,])- max(pred_prob_bat[i,-n]))*10, digits = 0)
+  output[i,"RI"] <- convertRI((max(pred_prob_bat[i,])- max(pred_prob_bat[i,-n])))
 }
 # colnames(output) <- c("SAMPLE", "PREDICTION", "DIFF", "RI")
 

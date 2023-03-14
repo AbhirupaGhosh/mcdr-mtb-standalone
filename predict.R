@@ -10,6 +10,13 @@ output_path <- args[3]
 # print(input_file)
 # print(output_path)
 
+convertRI <- function(diff){
+  if(diff < 0.1)
+    return(1)
+
+  return(ceiling(round(diff*10, digits = 0)/2))
+}
+
 library(reshape2, quietly=TRUE)
 library(caret, quietly=TRUE)
 
@@ -48,7 +55,7 @@ pred_prob <- predict(svm_R, data_2, type="prob")
 # pred_svm_R_ind <- predict(svm_R, data_2)
 prob <- unname(unlist(pred_prob))
 diff <- max(prob)-max(prob[prob!=max(prob)]) #highest - second highest
-RI <- round(diff*10, digits = 0)
+RI <- convertRI(diff)
 
 out <- pred_prob
 colnames(out)[1:3] <- c("MDR", "Susceptible", "XDR")
@@ -62,7 +69,7 @@ if(predict(svm_R, data_2)== "X") {
 }
 
 out$Sample <- Ind_l$SAMPLE
-out$RI <- round(diff*10, digits = 0)
+out$RI <- RI
 out <- out[c(5,1:4,6)]
 cat("\n")
 print(out)
