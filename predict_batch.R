@@ -35,7 +35,7 @@ Ind_batch$VAL <- round(Ind_batch$VAL, digits = 4)
 Ind_batch_l <- dcast(Ind_batch[,c("SAMPLE", "MUT", "VAL")], SAMPLE~MUT, value.var = "VAL")
 
 A_col <- unlist(read.table(paste0(script_path, "A_col.txt")))
-svm_R <- readRDS(paste0(script_path, "svm_R_model.rds"))
+svm_L <- readRDS(paste0(script_path, "svm_L_model.rds"))
 
 data_2_bat <- data.frame(matrix(ncol = length(A_col), nrow = nrow(Ind_batch_l)))
 colnames(data_2_bat) <- A_col
@@ -50,8 +50,8 @@ for(j in 1:nrow(data_2_bat)){
   }
 }
 
-pred_prob_bat <- predict(svm_R, data_2_bat, type="prob")
-pred_bat <- predict(svm_R, data_2_bat)
+pred_prob_bat <- predict(svm_L, data_2_bat, type="prob")
+pred_bat <- predict(svm_L, data_2_bat)
 
 # pred_bat <- unlist(pred_prob_svm_R_ind_bat)
 output <- data.frame(matrix(ncol = 6, nrow = nrow(pred_prob_bat)))

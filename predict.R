@@ -21,7 +21,7 @@ library(reshape2, quietly=TRUE)
 library(caret, quietly=TRUE)
 
 A_col <- unlist(read.table(paste0(script_path, "A_col.txt")))
-svm_R <- readRDS(paste0(script_path, "svm_R_model.rds"))
+svm_L <- readRDS(paste0(script_path, "svm_L_model.rds"))
 
 In <- read.table(input_file, comment.char = "", sep = "\t", header = TRUE)
 
@@ -51,8 +51,8 @@ for(i in colnames(data_2)){
 }
 
 
-pred_prob <- predict(svm_R, data_2, type="prob")
-# pred_svm_R_ind <- predict(svm_R, data_2)
+pred_prob <- predict(svm_L, data_2, type="prob")
+
 prob <- unname(unlist(pred_prob))
 diff <- max(prob)-max(prob[prob!=max(prob)]) #highest - second highest
 RI <- convertRI(diff)
@@ -60,9 +60,9 @@ RI <- convertRI(diff)
 out <- pred_prob
 colnames(out)[1:3] <- c("MDR", "Susceptible", "XDR")
 out[,c("MDR", "Susceptible", "XDR")] <- round(out[,c("MDR", "Susceptible", "XDR")], digits = 4)
-if(predict(svm_R, data_2)== "X") {
+if(predict(svm_L, data_2)== "X") {
   out$Class <- "XDR"
-} else if(predict(svm_R, data_2)== "M") {
+} else if(predict(svm_L, data_2)== "M") {
   out$Class <- "MDR"
 } else {
   out$Class <- "Susceptible"
